@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+websockets
+numpy
+supabase
+python-dotenv
+sqlalchemy
+asyncpg
+greenlet
+langchain
+langchain-openai
+langgraph
+langchain-groq
+pandas
+openpyxl
+PyPDF2
+python-multipart

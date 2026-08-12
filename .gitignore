@@ -1,0 +1,29 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# Next.js / Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+admin-portal/node_modules/
+admin-portal/.next/
+admin-portal/out/
+admin-portal/build/
+admin-portal/.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project Specific
+node_installer.msi
+START_PROJECT.bat
+cleanup.py
