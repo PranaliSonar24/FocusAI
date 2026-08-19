@@ -1,3 +1,5 @@
+**🚀 Deployed Application on AWS:** [https://myfocusai.duckdns.org](https://myfocusai.duckdns.org)
+
 <div align="center">
   
 # 🧠 FocusAI: Cognitive Telemetry Engine
@@ -8,7 +10,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![WebAssembly](https://img.shields.io/badge/WebAssembly-654FF0?style=for-the-badge&logo=webassembly&logoColor=white)](https://webassembly.org/)
-[![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain.com/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/)
 
 By deploying a highly optimized Edge AI vision pipeline directly in the browser, FocusAI transforms raw video into a continuous stream of lightweight, multi-modal biometric telemetry. This telemetry acts as the foundation for **Retrieval-Augmented Generation (RAG)**, allowing Autonomous Agents to analyze human engagement.
 
@@ -116,35 +118,49 @@ graph TD
 * Python (v3.9+)
 * Docker Desktop 
 
-### 1. Boot up the Database (Docker)
-We use Docker to instantly provision the TimescaleDB and PostgreSQL databases.
+### 1. Initial Setup
+Ensure your virtual environment is created and dependencies are installed:
 ```bash
-docker-compose up -d
-```
-*(Connection string: `postgresql://focus_user:focus_password@localhost:5432/focus_db`)*
-
-### 2. Start the Telemetry Backend
-```bash
+# Backend
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python main.py
-```
-*(The FastAPI backend will start running on `localhost:8000`)*
+cd ..
 
-### 3. Start the Frontend Application
-```bash
+# Frontend
 cd frontend
 npm install
-npm run dev
+cd ..
 ```
-*(The web portal runs at `http://localhost:3000`)*
 
-# Create new admin
+### 2. Start All Services
+We provide a convenient script to instantly boot up the databases (Docker), Backend, and Frontend.
+```bash
+chmod +x start.sh
+./start.sh
+```
+*(This starts the Next.js portal on `localhost:3000` and FastAPI on `localhost:8000`)*
+
+### 3. Test on Phone (Optional)
+To expose your local environment over a secure internet tunnel for phone testing:
+```bash
+./start.sh --tunnel
+```
+
+### 4. Create an Admin User
+```bash
 cd backend
 .venv/bin/python create_admin.py \
   --username "bits_pilani" \
   --password "admin123" \
   --name "BITS Pilani Admin" \
   --email "admin@bits-pilani.ac.in"
+```
+
+### Deployment
+For production deployment, you can use the deployment script:
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
