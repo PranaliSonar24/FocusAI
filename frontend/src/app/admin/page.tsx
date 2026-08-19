@@ -421,16 +421,15 @@ export default function AdminDashboard() {
   };
 
   // --- ECharts Options ---
-  const times = data.map((d: any) => new Date(d.timestamp).toLocaleTimeString());
-  const scores = data.map((d: any) => d.focus_score);
+    const timeSeriesData = data.map((d: any) => [new Date(d.timestamp).getTime(), d.focus_score]);
   
   const scoreOption = {
     tooltip: { trigger: "axis", backgroundColor: "rgba(15, 23, 42, 0.9)", textStyle: {color: '#fff'}, borderColor: "transparent" },
     grid: { left: "3%", right: "3%", bottom: "5%", top: "10%", containLabel: true },
-    xAxis: { type: "category", data: times, boundaryGap: false, axisLine: { lineStyle: { color: "#e2e8f0" } }, axisLabel: { color: "#64748b" } },
+    xAxis: { type: "time", boundaryGap: false, axisLine: { lineStyle: { color: "#e2e8f0" } }, axisLabel: { color: "#64748b" } },
     yAxis: { type: "value", max: 100, min: 0, splitLine: { lineStyle: { color: "#f1f5f9", type: "dashed" } }, axisLabel: { color: "#64748b" } },
     series: [{
-      name: "Focus Score", data: scores, type: "line", smooth: true, showSymbol: false,
+      name: "Focus Score", data: timeSeriesData, type: "line", smooth: true, showSymbol: false,
       lineStyle: { color: "#3b82f6", width: 3 },
       areaStyle: {
         color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(59, 130, 246, 0.2)" }, { offset: 1, color: "rgba(59, 130, 246, 0)" }] }

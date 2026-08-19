@@ -49,32 +49,36 @@ async def get_telemetry(session_id: str, user_id: Optional[str] = None):
         async with SessionLocal() as db:
             if user_id and user_id != "all":
                 query = text("""
-                    SELECT a.timestamp, a.attention_score as focus_score, a.user_id,
-                           e.emotion as mood, f.smile_type,
-                           f.is_tense, f.yawning, f.lip_movement,
-                           f.eyebrow_raise, f.eyebrow_lower
-                    FROM attention_timeline a
-                    LEFT JOIN emotion_timeline e ON a.timestamp = e.timestamp AND a.session_id = e.session_id
-                    LEFT JOIN facial_metrics f ON a.timestamp = f.timestamp AND a.session_id = f.session_id
-                    WHERE a.user_id = :uid AND a.session_id = :session_id
-                    ORDER BY a.timestamp DESC
-                    LIMIT 100
+                                        SELECT * FROM (
+                        SELECT a.timestamp, a.attention_score as focus_score, a.user_id,
+                               e.emotion as mood, f.smile_type,
+                               f.is_tense, f.yawning, f.lip_movement,
+                               f.eyebrow_raise, f.eyebrow_lower
+                        FROM attention_timeline a
+                        LEFT JOIN emotion_timeline e ON a.timestamp = e.timestamp AND a.session_id = e.session_id
+                        LEFT JOIN facial_metrics f ON a.timestamp = f.timestamp AND a.session_id = f.session_id
+                        WHERE a.user_id = :uid AND a.session_id = :session_id
+                        ORDER BY a.timestamp DESC
+                        LIMIT 200
+                    ) sub ORDER BY timestamp ASC
                 """)
                 result = await db.execute(query, {"uid": user_id, "session_id": session_id})
             else:
                 query = text("""
-                    SELECT a.timestamp, a.attention_score as focus_score, a.user_id,
-                           e.emotion as mood, f.smile_type,
-                           f.is_tense, f.yawning, f.lip_movement,
-                           f.eyebrow_raise, f.eyebrow_lower
-                    FROM attention_timeline a
-                    JOIN users u ON a.user_id = u.username
-                    JOIN roles r ON u.role_id = r.id
-                    LEFT JOIN emotion_timeline e ON a.timestamp = e.timestamp AND a.session_id = e.session_id
-                    LEFT JOIN facial_metrics f ON a.timestamp = f.timestamp AND a.session_id = f.session_id
-                    WHERE r.name = 'User' AND a.session_id = :session_id
-                    ORDER BY a.timestamp DESC
-                    LIMIT 200
+                                        SELECT * FROM (
+                        SELECT a.timestamp, a.attention_score as focus_score, a.user_id,
+                               e.emotion as mood, f.smile_type,
+                               f.is_tense, f.yawning, f.lip_movement,
+                               f.eyebrow_raise, f.eyebrow_lower
+                        FROM attention_timeline a
+                        JOIN users u ON a.user_id = u.username
+                        JOIN roles r ON u.role_id = r.id
+                        LEFT JOIN emotion_timeline e ON a.timestamp = e.timestamp AND a.session_id = e.session_id
+                        LEFT JOIN facial_metrics f ON a.timestamp = f.timestamp AND a.session_id = f.session_id
+                        WHERE r.name = 'User' AND a.session_id = :session_id
+                        ORDER BY a.timestamp DESC
+                        LIMIT 200
+                    ) sub ORDER BY timestamp ASC
                 """)
                 result = await db.execute(query, {"session_id": session_id})
                 
