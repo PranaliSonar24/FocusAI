@@ -1,0 +1,41 @@
+import re
+with open('/Users/shubham/Desktop/FocusAI/backend/api/routes.py', 'r') as f:
+    content = f.read()
+
+# I will replace the new date_trunc queries back with the old LIMIT 200 queries, but wrapped in a subquery to sort ASC
+old_query = """                    SELECT * FROM (
+                        SELECT a.timestamp, a.attention_score as focus_score, a.user_id,
+                               e.emotion as mood, f.smile_type,
+                               f.is_tense, f.yawning, f.lip_movement,
+                               f.eyebrow_raise, f.eyebrow_lower
+                        FROM attention_timeline a
+                        LEFT JOIN emotion_timeline e ON a.timestamp = e.timestamp AND a.session_id = e.session_id
+                        LEFT JOIN facial_metrics f ON a.timestamp = f.timestamp AND a.session_id = f.session_id
+                        WHERE a.user_id = :uid AND a.session_id = :session_id
+                        ORDER BY a.timestamp DESC
+                        LIMIT 200
+                    ) sub ORDER BY timestamp ASC"""
+
+old_query_all = """                    SELECT * FROM (
+                        SELECT a.timestamp, a.attention_score as focus_score, a.user_id,
+                               e.emotion as mood, f.smile_type,
+                               f.is_tense, f.yawning, f.lip_movement,
+                               f.eyebrow_raise, f.eyebrow_lower
+                        FROM attention_timeline a
+                        JOIN users u ON a.user_id = u.username
+                        JOIN roles r ON u.role_id = r.id
+                        LEFT JOIN emotion_timeline e ON a.timestamp = e.timestamp AND a.session_id = e.session_id
+                        LEFT JOIN facial_metrics f ON a.timestamp = f.timestamp AND a.session_id = f.session_id
+                        WHERE r.name = 'User' AND a.session_id = :session_id
+                        ORDER BY a.timestamp DESC
+                        LIMIT 200
+                    ) sub ORDER BY timestamp ASC"""
+
+# Replace the first one
+content = re.sub(r"SELECT \s*date_trunc\('minute', a\.timestamp\) as timestamp, \s*AVG\(a\.attention_score\) as focus_score,.*?GROUP BY date_trunc\('minute', a\.timestamp\)\s*ORDER BY timestamp ASC", old_query, content, count=1, flags=re.DOTALL)
+
+# Replace the second one
+content = re.sub(r"SELECT \s*date_trunc\('minute', a\.timestamp\) as timestamp, \s*AVG\(a\.attention_score\) as focus_score,.*?GROUP BY date_trunc\('minute', a\.timestamp\)\s*ORDER BY timestamp ASC", old_query_all, content, count=1, flags=re.DOTALL)
+
+with open('/Users/shubham/Desktop/FocusAI/backend/api/routes.py', 'w') as f:
+    f.write(content)
